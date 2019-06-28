@@ -21,9 +21,18 @@ if(!empty($_FILES['file']['name'])){
 				preg_match_all($preg,$text,$str1);
 				if(@$str1[1][0] <> ""){
 					$text2 = @$PrefixName . $str1[1][0] . $leftText;
-					echo $text2 . "</br>";
+					//echo $text2 . "</br>";
 					fwrite($fopen,$text2 . "\r\n");
 				} 
+			}
+			fclose($fopen);
+			$f_arr = file('url.txt');
+			$f_arr2 = array_unique($f_arr);
+			unlink('url.txt');
+			$fopen = fopen('url.txt','a');
+			foreach($f_arr2 as $text1){
+				echo $text1 . "</br>";
+				fwrite($fopen,$text1);
 			}
 			fclose($fopen);
 		}
