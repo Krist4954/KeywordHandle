@@ -1,6 +1,16 @@
 <?php
 include './keyview.html';
 
+$sqlhost = "localhost";
+$sqlname = "root";
+$sqlpass = "root";
+$dbname = 'test';
+$conn = mysqli_connect($sqlhost,$sqlname,$sqlpass,$dbname);
+
+if($conn->connect_error) {
+	die('数据库连接失败：' . $conn->connect_error);
+}
+
 if(!empty($_FILES['file']['name'])){
 	$PrefixName = $_POST['PrefixName'];
 	$leftText = $_POST['leftText'];
@@ -29,19 +39,36 @@ if(!empty($_FILES['file']['name'])){
 			$f_arr = file('url.txt');
 			$f_arr2 = array_unique($f_arr);
 			unlink('url.txt');
+			//查询历史记录
+			$fopen = fopen('url.txt','a');
+			foreach($f_arr2 as $check){
+				$sql="select * from user where word='{$check}'";
+				$sql2="INSERT INTO user (word) VALUES ('{$check}')";
+				$result = $conn->query($sql);
+				if($result->num_rows == 0){
+					//echo $result->num_rows . '</br>';
+					$conn->query($sql2);
+					echo $check . "</br>";
+					fwrite($fopen,$check);
+				}
+			}
+			fclose($fopen);
+			$conn->close();
+			/*
 			$fopen = fopen('url.txt','a');
 			foreach($f_arr2 as $text1){
 				echo $text1 . "</br>";
 				fwrite($fopen,$text1);
 			}
 			fclose($fopen);
+			*/
 		}
 		
 	}else{
 		echo "上传文件太大或未知错误";
 	}
+	
 }
-
 
 
 
